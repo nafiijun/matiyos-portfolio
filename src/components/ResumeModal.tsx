@@ -25,7 +25,212 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({ isOpen, onClose }) => 
   if (!isOpen) return null;
 
   const handlePrint = () => {
-    window.print();
+    const content = document.getElementById('resume-printable-area');
+    if (!content) return;
+
+    const printWindow = window.open('', '_blank', 'width=900,height=700');
+    if (!printWindow) return;
+
+    printWindow.document.write(`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CV — Matiyos Bizuneh</title>
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 14mm 16mm 14mm 16mm;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      background: #ffffff;
+      color: #1e293b;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 10pt;
+      line-height: 1.5;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* ── Layout wrapper ── */
+    #resume-printable-area {
+      padding: 0;
+      width: 100%;
+    }
+
+    /* ── Header ── */
+    .print-section {
+      margin-bottom: 14pt;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .print-section:first-child {
+      border-bottom: 1.5pt solid #cbd5e1;
+      padding-bottom: 10pt;
+      margin-bottom: 14pt;
+    }
+
+    /* flex rows */
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .items-center { align-items: center; }
+    .items-start { align-items: flex-start; }
+    .justify-between { justify-content: space-between; }
+    .gap-4 { gap: 12pt; }
+    .gap-3\\.5 { gap: 10pt; }
+    .gap-1\\.5 { gap: 4pt; }
+    .gap-1 { gap: 3pt; }
+    .gap-3 { gap: 8pt; }
+    .space-y-1 > * + * { margin-top: 3pt; }
+    .space-y-2 > * + * { margin-top: 5pt; }
+    .space-y-3 > * + * { margin-top: 7pt; }
+    .space-y-1\\.5 > * + * { margin-top: 4pt; }
+    .space-y-2\\.5 > * + * { margin-top: 6pt; }
+    .pt-2 { padding-top: 5pt; }
+    .pb-5 { padding-bottom: 14pt; }
+    .pb-1 { padding-bottom: 3pt; }
+    .pl-1 { padding-left: 3pt; }
+    .shrink-0 { flex-shrink: 0; }
+
+    /* ── Avatar ── */
+    .relative.w-14.h-14 {
+      width: 48pt;
+      height: 48pt;
+      min-width: 48pt;
+      border-radius: 8pt;
+      overflow: hidden;
+      border: 1.5pt solid #cbd5e1;
+    }
+
+    img {
+      width: 48pt;
+      height: 48pt;
+      object-fit: cover;
+      display: block;
+      border-radius: 6pt;
+    }
+
+    /* ── Typography ── */
+    h1, .print-title {
+      color: #0f172a;
+      font-weight: 800;
+    }
+
+    h1 { font-size: 18pt; line-height: 1.2; }
+
+    .print-subtitle {
+      color: #3730a3;
+      font-weight: 700;
+      font-size: 9pt;
+    }
+
+    .print-muted {
+      color: #64748b;
+      font-size: 8.5pt;
+    }
+
+    .text-2xl  { font-size: 18pt; }
+    .text-sm   { font-size: 9pt; }
+    .text-xs   { font-size: 8.5pt; }
+    .text-base { font-size: 10pt; }
+    .font-black  { font-weight: 900; }
+    .font-bold   { font-weight: 700; }
+    .font-medium { font-weight: 500; }
+    .font-mono   { font-family: 'Fira Code', ui-monospace, Consolas, monospace; }
+    .font-semibold { font-weight: 600; }
+    .leading-relaxed { line-height: 1.6; }
+    .tracking-widest { letter-spacing: 0.1em; }
+    .uppercase { text-transform: uppercase; }
+
+    /* colour tokens */
+    .text-white,
+    .text-slate-200,
+    .text-slate-300 { color: #1e293b; }
+    .text-slate-400  { color: #64748b; }
+    .text-indigo-400,
+    .text-indigo-300 { color: #4338ca; }
+    .mt-0\\.5 { margin-top: 2pt; }
+
+    /* ── Section heading bar ── */
+    h2 {
+      font-size: 7.5pt;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #3730a3 !important;
+      font-weight: 800;
+      border-bottom: 1.5pt solid #e2e8f0;
+      padding-bottom: 3pt;
+      margin-bottom: 7pt;
+    }
+
+    /* ── Cards ── */
+    .print-card {
+      border: 1pt solid #e2e8f0;
+      background: #f8fafc;
+      border-radius: 5pt;
+      padding: 7pt 9pt;
+      margin-bottom: 5pt;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    /* ── Skills 2-col grid ── */
+    .grid.grid-cols-1 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6pt;
+    }
+
+    /* ── Bullet lists ── */
+    ul.list-disc {
+      list-style: disc;
+      padding-left: 14pt;
+    }
+
+    ul.list-inside { list-style-position: inside; }
+
+    li { margin-bottom: 2pt; color: #334155; }
+
+    /* ── Misc Tailwind helpers used in the markup ── */
+    .rounded-2xl, .rounded-xl { border-radius: 5pt; }
+    .border-b { border-bottom: 1pt solid #e2e8f0; }
+    .border   { border: 1pt solid #e2e8f0; }
+    .overflow-hidden { overflow: hidden; }
+    .block  { display: block; }
+    .inline { display: inline; }
+    .w-3\\.5, .h-3\\.5 { width: 10pt; height: 10pt; } /* lucide icons */
+    svg { display: inline-block; vertical-align: middle; }
+
+    /* hide inline SVG icons that render as empty boxes */
+    svg { width: 9pt; height: 9pt; color: #4338ca; }
+
+    /* ── Links ── */
+    a { color: #3730a3; text-decoration: underline; word-break: break-all; }
+    a::after { content: ""; } /* no URL duplication here — text already shows it */
+  </style>
+</head>
+<body>
+  ${content.innerHTML}
+  <script>
+    window.onload = function () {
+      window.print();
+      window.onafterprint = function () { window.close(); };
+    };
+  <\/script>
+</body>
+</html>
+    `);
+
+    printWindow.document.close();
   };
 
   const handleCopyText = () => {
