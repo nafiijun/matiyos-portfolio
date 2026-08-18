@@ -1,0 +1,616 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  code, pre, .font-mono {
+    font-family: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #090d16;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Background grid pattern */
+.bg-grid-pattern {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(99, 102, 241, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
+}
+
+.bg-dot-pattern {
+  background-image: radial-gradient(rgba(129, 140, 248, 0.12) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Polish cards & glow helpers */
+.card-polish {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(51, 65, 85, 0.7);
+}
+
+.card-polish-hover {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-polish-hover:hover {
+  transform: translateY(-3px);
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 20px 30px -10px rgba(79, 70, 229, 0.15);
+}
+
+/* Glass effect utilities */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-light {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* ==========================================================================
+   Comprehensive Print Media Queries for PDF Export & Clean Documentation
+   ========================================================================== */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 14mm 16mm 14mm 16mm;
+  }
+
+  @page :first {
+    margin-top: 12mm;
+  }
+
+  /* -------------------------------------------------------------------------
+     Base Reset — white page, dark ink, no decorative chrome
+     ------------------------------------------------------------------------- */
+  *, *::before, *::after {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    color: #1e293b !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    filter: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  html, body {
+    background: #ffffff !important;
+    color: #1e293b !important;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-size: 10pt !important;
+    line-height: 1.5 !important;
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 0 !important;
+    width: 100% !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* -------------------------------------------------------------------------
+     Hide all non-content UI — nav, modals, interactive controls, decorations
+     ------------------------------------------------------------------------- */
+  .no-print,
+  nav,
+  header,
+  footer,
+  #scroll-progress-indicator,
+  #back-to-top-button,
+  /* Hero section: decorative code block & ambient glows */
+  .hero-code-panel,
+  .hero-ambient-glow,
+  /* Portfolio interactive controls */
+  .skills-filter-controls,
+  .projects-filter-controls,
+  /* Recharts canvases — replaced by static print summaries */
+  .recharts-wrapper,
+  .recharts-surface,
+  /* Modals other than resume (resume modal is flattened below) */
+  [id$="-modal"]:not(.resume-modal-backdrop),
+  /* Framer Motion wrappers not part of printed content */
+  button:not(.print-keep),
+  input,
+  select,
+  textarea,
+  form,
+  .bg-grid-pattern,
+  .bg-dot-pattern {
+    display: none !important;
+  }
+
+  /* -------------------------------------------------------------------------
+     Headings — avoid page breaks after them, enforce dark ink
+     ------------------------------------------------------------------------- */
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    color: #0f172a !important;
+  }
+
+  /* Orphan / widow control */
+  p, li, blockquote {
+    orphans: 3;
+    widows: 3;
+  }
+
+  /* -------------------------------------------------------------------------
+     Links — show href inline so PDF readers can copy them; suppress decorative
+     underlines on nav-style links
+     ------------------------------------------------------------------------- */
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 7.5pt !important;
+    color: #475569 !important;
+    font-weight: 400 !important;
+    word-break: break-all;
+  }
+
+  /* Suppress URL expansion for short anchor labels and buttons */
+  a[href^="#"]::after,
+  a[href^="javascript"]::after,
+  .no-print-url::after {
+    content: "" !important;
+  }
+
+  a {
+    color: #312e81 !important;
+    text-decoration: underline !important;
+    text-decoration-color: #c7d2fe !important;
+  }
+
+  /* =========================================================================
+     1. RESUME MODAL — Flatten fixed overlay into normal document flow
+     ========================================================================= */
+
+  /* Make the fullscreen backdrop a normal block so everything flows on page */
+  .resume-modal-backdrop {
+    position: static !important;
+    inset: auto !important;
+    display: block !important;
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    z-index: auto !important;
+  }
+
+  /* Remove the scrollable container chrome */
+  .resume-modal-container {
+    position: static !important;
+    display: block !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    flex-direction: column !important;
+  }
+
+  /* Main printable area — remove scroll clip and dark background */
+  #resume-printable-area {
+    display: block !important;
+    background: #ffffff !important;
+    color: #1e293b !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+    width: 100% !important;
+    /* Override Tailwind space-y-7 gap between sections */
+    row-gap: 0 !important;
+  }
+
+  /* Resume header: lay out avatar + name side-by-side */
+  #resume-printable-area > div:first-child {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    gap: 12pt !important;
+    padding-bottom: 8pt !important;
+    border-bottom: 1.5pt solid #cbd5e1 !important;
+    margin-bottom: 10pt !important;
+  }
+
+  /* Avatar dimensions in resume header */
+  #resume-printable-area img {
+    width: 48pt !important;
+    height: 48pt !important;
+    min-width: 48pt !important;
+    border-radius: 6pt !important;
+    border: 1.5pt solid #cbd5e1 !important;
+    object-fit: cover !important;
+    display: block !important;
+  }
+
+  /* -------------------------------------------------------------------------
+     Resume shared primitives
+     ------------------------------------------------------------------------- */
+
+  /* Section block spacing */
+  .print-section {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    margin-bottom: 11pt !important;
+  }
+
+  /* Section heading bar */
+  .print-section > h2,
+  #resume-printable-area h2 {
+    font-size: 7.5pt !important;
+    letter-spacing: 0.1em !important;
+    text-transform: uppercase !important;
+    color: #3730a3 !important;
+    font-weight: 800 !important;
+    border-bottom: 1.5pt solid #e2e8f0 !important;
+    padding-bottom: 3pt !important;
+    margin-bottom: 7pt !important;
+  }
+
+  /* Content cards */
+  .print-card,
+  #resume-printable-area .print-card {
+    border: 1pt solid #e2e8f0 !important;
+    background: #f8fafc !important;
+    border-radius: 5pt !important;
+    padding: 7pt 9pt !important;
+    margin-bottom: 5pt !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Typography hierarchy */
+  .print-title,
+  #resume-printable-area .print-title {
+    color: #0f172a !important;
+    font-weight: 800 !important;
+    font-size: 10.5pt !important;
+  }
+
+  .print-subtitle,
+  #resume-printable-area .print-subtitle {
+    color: #3730a3 !important;
+    font-weight: 700 !important;
+    font-size: 9pt !important;
+  }
+
+  .print-muted,
+  #resume-printable-area .print-muted {
+    color: #64748b !important;
+    font-size: 8.5pt !important;
+  }
+
+  /* Skill/tech tag badges */
+  .print-badge {
+    display: inline-block !important;
+    border: 1pt solid #cbd5e1 !important;
+    background: #f1f5f9 !important;
+    color: #1e293b !important;
+    padding: 1.5pt 5pt !important;
+    border-radius: 3pt !important;
+    font-size: 7.5pt !important;
+  }
+
+  /* Resume two-column skills grid stays 2-col */
+  #resume-printable-area .grid.grid-cols-1.sm\\:grid-cols-2 {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6pt !important;
+  }
+
+  /* =========================================================================
+     2. PORTFOLIO PAGE — Section-by-section print refinement
+     ========================================================================= */
+
+  /* Each major section gets a clean white background and controlled spacing */
+  section,
+  #about, #skills, #education, #contact, #projects {
+    background: #ffffff !important;
+    padding-top: 14pt !important;
+    padding-bottom: 10pt !important;
+    page-break-inside: auto !important;
+  }
+
+  /* Force a clean page break before each major portfolio section */
+  #about      { page-break-before: always !important; break-before: page !important; }
+  #skills     { page-break-before: always !important; break-before: page !important; }
+  #projects   { page-break-before: always !important; break-before: page !important; }
+  #education  { page-break-before: always !important; break-before: page !important; }
+  #contact    { page-break-before: always !important; break-before: page !important; }
+
+  /* Section headings — clear, prominent */
+  section h2 {
+    font-size: 16pt !important;
+    font-weight: 900 !important;
+    color: #0f172a !important;
+    margin-bottom: 10pt !important;
+  }
+
+  section h3 {
+    font-size: 11pt !important;
+    font-weight: 800 !important;
+    color: #1e293b !important;
+  }
+
+  /* Generic content cards used across the portfolio page */
+  .bg-slate-900,
+  .bg-slate-900\/60,
+  .bg-slate-900\/80,
+  .bg-slate-950 {
+    background: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+  }
+
+  /* Colour-coded text that would be invisible on white */
+  .text-white         { color: #0f172a !important; }
+  .text-slate-100,
+  .text-slate-200,
+  .text-slate-300     { color: #334155 !important; }
+  .text-slate-400,
+  .text-slate-500     { color: #64748b !important; }
+  .text-indigo-300,
+  .text-indigo-400    { color: #4338ca !important; }
+  .text-emerald-400   { color: #059669 !important; }
+  .text-purple-300,
+  .text-purple-400    { color: #7c3aed !important; }
+  .text-cyan-400      { color: #0891b2 !important; }
+  .text-amber-400     { color: #d97706 !important; }
+
+  /* Borders that would disappear */
+  .border-slate-800,
+  .border-slate-700   { border-color: #e2e8f0 !important; }
+
+  /* -------------------------------------------------------------------------
+     About Section
+     ------------------------------------------------------------------------- */
+  #about .lg\\:col-span-8,
+  #about .lg\\:col-span-4 {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Competency progress bars — keep filled color via print-color-adjust */
+  #about .bg-gradient-to-r {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    background: #4338ca !important;
+  }
+
+  #about .bg-slate-800.rounded-full {
+    background: #e2e8f0 !important;
+  }
+
+  /* 4-pillar grid: 2 columns in print */
+  #about .grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8pt !important;
+  }
+
+  /* -------------------------------------------------------------------------
+     Skills Section
+     ------------------------------------------------------------------------- */
+
+  /* Filter tabs and search are hidden — show all categories */
+  #skills .skills-filter-controls,
+  #skills input,
+  #skills button:not(.print-keep) {
+    display: none !important;
+  }
+
+  /* Skill cards: 3-column grid in print */
+  #skills .grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-3 {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1fr !important;
+    gap: 6pt !important;
+  }
+
+  /* Skill card base */
+  #skills .rounded-2xl.border {
+    border: 1pt solid #e2e8f0 !important;
+    background: #f8fafc !important;
+    padding: 6pt 8pt !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Level badge colours */
+  .bg-indigo-500\/15 { background: #eef2ff !important; }
+  .bg-purple-500\/15 { background: #f5f3ff !important; }
+  .text-indigo-300   { color: #4338ca !important; }
+  .text-purple-300   { color: #7c3aed !important; }
+
+  /* -------------------------------------------------------------------------
+     Projects Section
+     ------------------------------------------------------------------------- */
+
+  /* Hide charts and interactive controls in projects */
+  #projects .recharts-wrapper,
+  #projects .recharts-surface,
+  #projects input[type="text"],
+  #projects .no-print {
+    display: none !important;
+  }
+
+  /* Analytics grid (charts row) — hide entirely in print */
+  #projects > div > div.grid.grid-cols-1.lg\\:grid-cols-2.gap-8.mb-14 {
+    display: none !important;
+  }
+
+  /* Project cards: 2-column grid */
+  #projects .grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3 {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10pt !important;
+  }
+
+  /* Individual project card */
+  .print-project-card {
+    border: 1pt solid #e2e8f0 !important;
+    background: #ffffff !important;
+    border-radius: 5pt !important;
+    padding: 8pt 10pt !important;
+    margin-bottom: 0 !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    /* Remove the hover accent top border glow div */
+    overflow: visible !important;
+  }
+
+  /* Hide project banner image in print (replaced by text metadata) */
+  .print-project-card .relative.w-full.h-44 {
+    display: none !important;
+  }
+
+  /* Show the print-only metadata block */
+  .print-project-card .print-meta {
+    display: block !important;
+    font-size: 8pt !important;
+    color: #475569 !important;
+    padding-top: 4pt !important;
+    border-top: 1pt solid #e2e8f0 !important;
+    margin-top: 6pt !important;
+  }
+  /* Tag pills */
+  .print-project-card .inline-flex.items-center.gap-1\\.5 {
+    border: 1pt solid #e2e8f0 !important;
+    background: #f1f5f9 !important;
+    color: #334155 !important;
+    padding: 1pt 4pt !important;
+    border-radius: 3pt !important;
+    font-size: 7.5pt !important;
+  }
+
+  /* -------------------------------------------------------------------------
+     Education Section
+     ------------------------------------------------------------------------- */
+
+  /* Timeline vertical line — remove pseudo-element decorative line */
+  #education .before\\:absolute {
+    padding-left: 0 !important;
+  }
+  #education .before\\:absolute::before {
+    display: none !important;
+  }
+  /* Timeline dots */
+  #education .relative.pl-9 {
+    padding-left: 0 !important;
+    position: static !important;
+  }
+  #education .absolute.left-1\\.5 {
+    display: none !important;
+  }
+
+  /* Experience & education cards */
+  #education .bg-slate-900.border.border-slate-800 {
+    border: 1pt solid #e2e8f0 !important;
+    background: #f8fafc !important;
+    border-radius: 5pt !important;
+    padding: 7pt 9pt !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Coursework grid: 2 columns */
+  #education .grid.grid-cols-1.sm\\:grid-cols-2.gap-2\\.5 {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 5pt !important;
+  }
+
+  /* Capstone card */
+  #education .bg-slate-950.border.border-indigo-500\/20 {
+    border: 1pt solid #c7d2fe !important;
+    background: #eef2ff !important;
+    border-radius: 5pt !important;
+    padding: 7pt 9pt !important;
+  }
+
+  /* -------------------------------------------------------------------------
+     Contact Section — hide the form, show contact info only
+     ------------------------------------------------------------------------- */
+  #contact .lg\\:col-span-7,
+  #contact form,
+  #contact button:not(.print-keep) {
+    display: none !important;
+  }
+
+  #contact .lg\\:col-span-5 {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* =========================================================================
+     3. HERO — Trim to a clean title block for portfolio PDF overview
+     ========================================================================= */
+
+  /* Show hero but strip all interactive / animated content */
+  section.relative.pt-32 {
+    padding-top: 14pt !important;
+    padding-bottom: 10pt !important;
+  }
+
+  /* Right column (code simulator) — hidden in print */
+  section.relative.pt-32 .lg\\:col-span-5 {
+    display: none !important;
+  }
+
+  /* Left column — full width */
+  section.relative.pt-32 .lg\\:col-span-7 {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* CTA buttons in hero */
+  section.relative.pt-32 .flex.flex-wrap.items-center.gap-3 {
+    display: none !important;
+  }
+
+  /* Floating IS graduate badge below code panel */
+  section.relative.pt-32 .absolute.-bottom-5 {
+    display: none !important;
+  }
+}
